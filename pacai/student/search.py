@@ -1,6 +1,9 @@
 """
 In this file, you will implement generic search algorithms which are called by Pacman agents.
 """
+from pacai.util.stack import Stack
+from pacai.util.queue import Queue
+from pacai.util.priorityQueue import PriorityQueue
 
 def depthFirstSearch(problem):
     """
@@ -19,7 +22,32 @@ def depthFirstSearch(problem):
     """
 
     # *** Your Code Here ***
-    raise NotImplementedError()
+    print("Start: %s" % (str(problem.startingState())))
+    print("Is the start a goal?: %s" % (problem.isGoal(problem.startingState())))
+    print("Start's successors: %s" % (problem.successorStates(problem.startingState())))
+    start_state = problem.startingState()
+
+    frontier = Stack()
+    frontier.push((start_state, list()))
+    explored = list()
+    path = list()
+
+    while not frontier.isEmpty():
+        node, c_action = frontier.pop()
+
+        if problem.isGoal(node):
+            path = c_action
+            break
+
+        for state, action, _ in problem.successorStates(node):
+            if state not in explored:
+                frontier.push((state, c_action + [action]))
+                explored.append(state)
+        explored.append(node)
+
+    print(path)
+    return path
+
 
 def breadthFirstSearch(problem):
     """
@@ -27,7 +55,28 @@ def breadthFirstSearch(problem):
     """
 
     # *** Your Code Here ***
-    raise NotImplementedError()
+    start_state = problem.startingState()
+
+    frontier = Queue()
+    frontier.push((start_state, list()))
+    explored = list()
+    path = list()
+
+    while not frontier.isEmpty():
+        node, c_action = frontier.pop()
+
+        if problem.isGoal(node):
+            path = c_action
+            break
+
+        for state, action, _ in problem.successorStates(node):
+            if state not in explored:
+                frontier.push((state, c_action + [action]))
+                explored.append(state)
+        explored.append(node)
+
+    print(path)
+    return path
 
 def uniformCostSearch(problem):
     """

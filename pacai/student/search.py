@@ -29,7 +29,7 @@ def depthFirstSearch(problem):
 
     frontier = Stack()
     frontier.push((start_state, list()))
-    explored = list()
+    explored = set()
     path = list()
 
     while not frontier.isEmpty():
@@ -42,10 +42,9 @@ def depthFirstSearch(problem):
         for state, action, _ in problem.successorStates(node):
             if state not in explored:
                 frontier.push((state, c_action + [action]))
-                explored.append(state)
-        explored.append(node)
+                explored.add(state)
+        explored.add(node)
 
-    print(path)
     return path
 
 
@@ -59,7 +58,7 @@ def breadthFirstSearch(problem):
 
     frontier = Queue()
     frontier.push((start_state, list()))
-    explored = list()
+    explored = set()
     path = list()
 
     while not frontier.isEmpty():
@@ -72,10 +71,9 @@ def breadthFirstSearch(problem):
         for state, action, _ in problem.successorStates(node):
             if state not in explored:
                 frontier.push((state, c_action + [action]))
-                explored.append(state)
-        explored.append(node)
+                explored.add(state)
+        explored.add(node)
 
-    print(path)
     return path
 
 def uniformCostSearch(problem):
@@ -84,7 +82,14 @@ def uniformCostSearch(problem):
     """
 
     # *** Your Code Here ***
-    raise NotImplementedError()
+    start_state = problem.startingState()
+
+    frontier = PriorityQueue()
+    explored = list()
+    path = list()
+
+    return path
+
 
 def aStarSearch(problem, heuristic):
     """

@@ -22,9 +22,6 @@ def depthFirstSearch(problem):
     """
 
     # *** Your Code Here ***
-    print("Start: %s" % (str(problem.startingState())))
-    print("Is the start a goal?: %s" % (problem.isGoal(problem.startingState())))
-    print("Start's successors: %s" % (problem.successorStates(problem.startingState())))
     start_state = problem.startingState()
 
     frontier = Stack()
@@ -85,8 +82,28 @@ def uniformCostSearch(problem):
     start_state = problem.startingState()
 
     frontier = PriorityQueue()
-    explored = list()
+    frontier.push((start_state, list(), 0), 0)
+    explored = set()
     path = list()
+    cost_map = dict()
+
+    while not frontier.isEmpty():
+        node, action, cost = frontier.pop()
+        cost_map[node] = cost
+
+        if problem.isGoal(node):
+            path = action
+            break
+
+        for s, a, c in problem.successorStates(node):
+            if s not in explored:
+                frontier.push((s, action + [a], cost + c), cost + c)
+                explored.add(s)
+            elif s in explored and (s in cost_map and cost_map[s] > (cost + c)):
+                frontier.push((s, action + [a], cost + c), cost + c)
+                cost_map[s] = cost + c
+                explored.add(s)
+            explored.add(node)
 
     return path
 
@@ -97,4 +114,31 @@ def aStarSearch(problem, heuristic):
     """
 
     # *** Your Code Here ***
-    raise NotImplementedError()
+    start_state = problem.startingState()
+
+    frontier = PriorityQueue()
+    frontier.push((start_state, list(), 0), 0)
+    explored = set()
+    path = list()
+    cost_map = dict()
+
+    while not frontier.isEmpty():
+        node, action, cost = frontier.pop()
+        cost_map[node] = cost
+
+        if problem.isGoal(node):
+            path = action
+            break
+
+        for s, a, c in problem.successorStates(node):
+            total_cost = cost + c + heuristic(s, problem)
+            if s not in explored:
+                frontier.push((s, action + [a], cost + c), total_cost)
+                explored.add(s)
+            elif s in explored and (s in cost_map and cost_map[s] > total_cost):
+                frontier.push((s, action + [a], cost + c), total_cost)
+                cost_map[s] = cost + c
+                explored.add(s)
+            explored.add(node)
+
+    return path

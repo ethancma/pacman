@@ -26,7 +26,7 @@ def depthFirstSearch(problem):
 
     frontier = Stack()
     frontier.push((start_state, list()))
-    explored = set()
+    explored = list()
     path = list()
 
     while not frontier.isEmpty():
@@ -39,8 +39,8 @@ def depthFirstSearch(problem):
         for state, action, _ in problem.successorStates(node):
             if state not in explored:
                 frontier.push((state, c_action + [action]))
-                explored.add(state)
-        explored.add(node)
+                explored.append(state)
+        explored.append(node)
 
     return path
 
@@ -55,7 +55,7 @@ def breadthFirstSearch(problem):
 
     frontier = Queue()
     frontier.push((start_state, list()))
-    explored = set()
+    explored = list()
     path = list()
 
     while not frontier.isEmpty():
@@ -68,8 +68,8 @@ def breadthFirstSearch(problem):
         for state, action, _ in problem.successorStates(node):
             if state not in explored:
                 frontier.push((state, c_action + [action]))
-                explored.add(state)
-        explored.add(node)
+                explored.append(state)
+        explored.append(node)
 
     return path
 
@@ -83,7 +83,7 @@ def uniformCostSearch(problem):
 
     frontier = PriorityQueue()
     frontier.push((start_state, list(), 0), 0)
-    explored = set()
+    explored = list()
     path = list()
     cost_map = dict()
 
@@ -98,12 +98,12 @@ def uniformCostSearch(problem):
         for s, a, c in problem.successorStates(node):
             if s not in explored:
                 frontier.push((s, action + [a], cost + c), cost + c)
-                explored.add(s)
+                explored.append(s)
             elif s in explored and (s in cost_map and cost_map[s] > (cost + c)):
                 frontier.push((s, action + [a], cost + c), cost + c)
                 cost_map[s] = cost + c
-                explored.add(s)
-            explored.add(node)
+                explored.append(s)
+            explored.append(node)
 
     return path
 
@@ -118,27 +118,32 @@ def aStarSearch(problem, heuristic):
 
     frontier = PriorityQueue()
     frontier.push((start_state, list(), 0), 0)
-    explored = set()
+    explored = list()
     path = list()
     cost_map = dict()
 
     while not frontier.isEmpty():
         node, action, cost = frontier.pop()
-        cost_map[node] = cost
+        if type(node[1]) == list:
+            cost_map[(node[0], tuple(node[1]))] = cost
+        else:
+            cost_map[node] = cost
 
         if problem.isGoal(node):
             path = action
             break
 
         for s, a, c in problem.successorStates(node):
+            if type(s[1]) == list:
+                s = (s[0], tuple(s[1]))
             total_cost = cost + c + heuristic(s, problem)
             if s not in explored:
                 frontier.push((s, action + [a], cost + c), total_cost)
-                explored.add(s)
+                explored.append(s)
             elif s in explored and (s in cost_map and cost_map[s] > total_cost):
                 frontier.push((s, action + [a], cost + c), total_cost)
                 cost_map[s] = cost + c
-                explored.add(s)
-            explored.add(node)
+                explored.append(s)
+            explored.append(node)
 
     return path

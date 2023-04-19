@@ -13,6 +13,7 @@ from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.base import SearchAgent
+from pacai.core.directions import Directions
 
 class CornersProblem(SearchProblem):
     """
@@ -64,7 +65,39 @@ class CornersProblem(SearchProblem):
                 logging.warning('Warning: no food in corner ' + str(corner))
 
         # *** Your Code Here ***
-        raise NotImplementedError()
+        self.startingGameState = startingGameState
+        self.cornersVisited = [False, False, False, False]
+
+        for idx, corner in enumerate(self.corners):
+            if self.startingPosition == corner:
+                self.cornersVisited[idx] = True
+
+    def startingState(self):
+        return (self.startingPosition, self.cornersVisited)
+
+    def isGoal(self, state):
+        _, visitedCorners = state
+        return all(visitedCorners)
+
+    def successorStates(self, state):
+        successors = []
+
+        pos, cornersVisited = state
+        for action in Directions.CARDINAL:
+            x, y = pos
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            if (not hitsWall):
+                copy = list(cornersVisited).copy()
+                for idx, corner in enumerate(self.corners):
+                    if (nextx, nexty) == corner:
+                        copy[idx] = True
+                successors.append((((nextx, nexty), copy), action, 1))
+
+        self._numExpanded += 1
+        return successors
 
     def actionsCost(self, actions):
         """
@@ -100,6 +133,16 @@ def cornersHeuristic(state, problem):
     # walls = problem.walls  # These are the walls of the maze, as a Grid.
 
     # *** Your Code Here ***
+    # get the unvisited corners
+    # find loop through unvisited corners, get the distances
+    # take the minimum
+    # pos, visitedCorners = state
+    # unvisitedCorners = list()
+    # for idx, i in enumerate(visitedCorners):
+    #     if not i:
+    #         unvisitedCorners.append(problem.corners[idx])
+    # print(f"unvisited corners: {unvisitedCorners}")
+
     return heuristic.null(state, problem)  # Default to trivial solution
 
 def foodHeuristic(state, problem):

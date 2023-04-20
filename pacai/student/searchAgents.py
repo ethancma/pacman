@@ -8,12 +8,13 @@ Good luck and happy searching!
 import logging
 
 from pacai.core.actions import Actions
-from pacai.core.search import heuristic
 from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.base import SearchAgent
 from pacai.core.directions import Directions
+from pacai.core import distance
+from pacai.student import search
 
 class CornersProblem(SearchProblem):
     """
@@ -135,15 +136,18 @@ def cornersHeuristic(state, problem):
     # *** Your Code Here ***
     # get the unvisited corners
     # find loop through unvisited corners, get the distances
-    # take the minimum
-    # pos, visitedCorners = state
-    # unvisitedCorners = list()
-    # for idx, i in enumerate(visitedCorners):
-    #     if not i:
-    #         unvisitedCorners.append(problem.corners[idx])
-    # print(f"unvisited corners: {unvisitedCorners}")
+    # take the minimum or max, find whats best
 
-    return heuristic.null(state, problem)  # Default to trivial solution
+    pos, visitedCorners = state
+    unvisitedCorners = list()
+    dist = list()
+
+    for idx, i in enumerate(visitedCorners):
+        if not i:
+            unvisitedCorners.append(problem.corners[idx])
+            dist.append(distance.maze(pos, problem.corners[idx], problem.startingGameState))
+
+    return max(dist) if dist else 0
 
 def foodHeuristic(state, problem):
     """
@@ -177,7 +181,12 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
 
     # *** Your Code Here ***
-    return heuristic.null(state, problem)  # Default to the null heuristic.
+    food_list = foodGrid.asList()
+    dist = list()
+    for food in food_list:
+        dist.append(distance.maze(position, food, problem.startingGameState))
+        # dist.append(distance.manhattan(position, food))
+    return max(dist) if dist else 0
 
 class ClosestDotSearchAgent(SearchAgent):
     """
@@ -219,7 +228,8 @@ class ClosestDotSearchAgent(SearchAgent):
         # problem = AnyFoodSearchProblem(gameState)
 
         # *** Your Code Here ***
-        raise NotImplementedError()
+        # return search.breadthFirstSearch(AnyFoodSearchProblem(gameState)) # 2360
+        return search.uniformCostSearch(AnyFoodSearchProblem(gameState))  # 2387, 323
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -247,6 +257,9 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         # Store the food for later reference.
         self.food = gameState.getFood()
+
+    def isGoal(self, state):
+        return state in self.food.asList()
 
 class ApproximateSearchAgent(BaseAgent):
     """

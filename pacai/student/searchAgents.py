@@ -277,3 +277,9 @@ class ApproximateSearchAgent(BaseAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
+
+    def registerInitialState(self, state):
+        pass
+
+    def getAction(self, state):
+        pass

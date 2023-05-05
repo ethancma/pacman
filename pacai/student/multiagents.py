@@ -285,8 +285,29 @@ def betterEvaluationFunction(currentGameState):
 
     DESCRIPTION: <write something here so we know what you did>
     """
+    score = currentGameState.getScore()
 
-    return currentGameState.getScore()
+    newPosition = currentGameState.getPacmanPosition()
+    oldFood = currentGameState.getFood().asList()
+    newGhostPos = currentGameState.getGhostPositions()
+    scaredTimes = [ghostState.getScaredTimer() for ghostState in currentGameState.getGhostStates()]
+
+    foodDist = [distance.manhattan(newPosition, food) for food in oldFood]
+
+    if len(foodDist) >= 2:
+        maxFoodDist = max(foodDist)
+        minFoodDist = min(foodDist)
+        score -= maxFoodDist
+        score -= minFoodDist
+
+    ghostDist = [distance.manhattan(newPosition, ghost) for ghost in newGhostPos]
+    if min(ghostDist) < 2:
+        score -= 1000
+
+    s = sum(scaredTimes)
+    if s > 0:
+        score += s
+    return score
 
 class ContestAgent(MultiAgentSearchAgent):
     """

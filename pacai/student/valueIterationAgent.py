@@ -54,3 +54,26 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
 
         return self.getPolicy(state)
+
+    def getPolicy(self, state):
+        """Returns the best action in the given state according to computed values."""
+        # `pacai.core.mdp.MarkovDecisionProcess.getStates`,
+        # `pacai.core.mdp.MarkovDecisionProcess.getPossibleActions`,
+        # `pacai.core.mdp.MarkovDecisionProcess.getTransitionStatesAndProbs`,
+        # `pacai.core.mdp.MarkovDecisionProcess.getReward`.
+        best_action = None
+        max_value = -999999
+        for action in self.mdp.getPossibleActions(state):
+            q_value = self.getQValue(state, action)
+            if q_value > max_value:
+                max_value = q_value
+                best_action = action
+        return best_action
+
+    def getQValue(self, state, action):
+        """Returns the q-value of the state action pair."""
+        q_value = 0
+        for next_state, p in self.mdp.getTransitionStatesAndProbs(state, action):
+            reward = self.mdp.getReward(state, action, next_state)
+            q_value += p * (reward + self.discountRate * self.getValue(next_state))
+        return q_value

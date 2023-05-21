@@ -1,4 +1,5 @@
 from pacai.agents.learning.value import ValueEstimationAgent
+from copy import deepcopy
 
 class ValueIterationAgent(ValueEstimationAgent):
     """
@@ -29,7 +30,6 @@ class ValueIterationAgent(ValueEstimationAgent):
     Note that if there are no legal actions, which is the case at the terminal state,
     you should return None.
     """
-
     def __init__(self, index, mdp, discountRate = 0.9, iters = 100, **kwargs):
         super().__init__(index, **kwargs)
 
@@ -39,7 +39,17 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.values = {}  # A dictionary which holds the q-values for each state.
 
         # Compute the values here.
-        raise NotImplementedError()
+        # raise NotImplementedError()
+        for _ in range(self.iters):
+            temp_values = deepcopy(self.values)
+            for state in self.mdp.getStates():
+                # if self.mdp.isTerminal(state): # works without was getting error earlier
+                #     continue
+                max_values = [self.getQValue(state, action)
+                              for action in self.mdp.getPossibleActions(state)]
+                if len(max_values) != 0:
+                    temp_values[state] = max(max_values)
+            self.values = temp_values
 
     def getValue(self, state):
         """

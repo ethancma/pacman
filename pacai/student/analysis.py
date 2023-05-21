@@ -11,50 +11,52 @@ NOT_POSSIBLE = None
 
 def question2():
     """
-    [Enter a description of what you did here.]
+    Noise to 0 because then no unintended successor states after an action.
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0
 
     return answerDiscount, answerNoise
 
 def question3a():
     """
-    [Enter a description of what you did here.]
+    Negative 2 living reward, but not too negative or else that goes to cliff.
+    Then this finds shortest path to closest exit due to penalty.
     """
 
     answerDiscount = 0.9
     answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerLivingReward = -2.0
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3b():
     """
-    [Enter a description of what you did here.]
+    Keep same living reward from (a) for +1 closest exit. Avoid cliff by
+    lowering discount.
     """
 
-    answerDiscount = 0.9
+    answerDiscount = 0.3
     answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerLivingReward = -2.0
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3c():
     """
-    [Enter a description of what you did here.]
+    0 noise for no unintended success state.
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.0
     answerLivingReward = 0.0
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3d():
     """
-    [Enter a description of what you did here.]
+    kept the same, because it worked.
     """
 
     answerDiscount = 0.9
@@ -65,7 +67,7 @@ def question3d():
 
 def question3e():
     """
-    [Enter a description of what you did here.]
+    kept the same, because it worked.
     """
 
     answerDiscount = 0.9
@@ -76,13 +78,9 @@ def question3e():
 
 def question6():
     """
-    [Enter a description of what you did here.]
+    Can't discover the optimal path.
     """
-
-    answerEpsilon = 0.3
-    answerLearningRate = 0.5
-
-    return answerEpsilon, answerLearningRate
+    return NOT_POSSIBLE
 
 if __name__ == '__main__':
     questions = [

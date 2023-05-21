@@ -1,6 +1,7 @@
 from pacai.agents.learning.reinforcement import ReinforcementAgent
 from pacai.util import reflection, probability
 import random
+from collections import defaultdict
 
 class QLearningAgent(ReinforcementAgent):
     """
@@ -171,6 +172,7 @@ class ApproximateQAgent(PacmanQAgent):
         self.featExtractor = reflection.qualifiedImport(extractor)
 
         # You might want to initialize weights here.
+        self.weights = defaultdict(float)
 
     def final(self, state):
         """
@@ -184,4 +186,37 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # You might want to print your weights here for debugging.
             # *** Your Code Here ***
-            raise NotImplementedError()
+            for k, v in self.weights.items():
+                print(f"{k}: {v}")
+
+    def getQValue(self, state, action):
+        """
+        Should return `Q(state, action) = w * featureVector`,
+        where `*` is the dotProduct operator.
+        """
+        qv = 0.0
+        f = self.featExtractor.getFeatures(self.featExtractor, state, action)
+        # for k, v in f.items():
+        #     qv += self.weights[k] * v
+        # return qv
+        for i in f:
+            v = 0
+            if i not in self.weights:
+                v = 0
+            else:
+                v = self.weights[i]
+            qv += v * f[i]
+        return qv
+
+    def update(self, state, action, nextState, reward):
+        """Should update your weights based on transition."""
+        f = self.featExtractor.getFeatures(self.featExtractor, state, action)
+        q = self.getQValue(state, action)
+        tra = 0
+        if len(self.getLegalActions(nextState)) == 0:
+            tra = reward - q
+        else:
+            tra = reward + self.getDiscountRate() * self.getValue(nextState) - q
+        for k, v in f.items():
+
+            self.weights[k] += tra * self.getAlpha() * v
